@@ -26,7 +26,7 @@ watch(() => color.preference, () => {
           <n-dialog-provider>
             <!-- 在这里没问题 -->
             <div text-center>
-              <p>我在app.vue</p>
+              <p>app.vue</p>
               <TestButton />
             </div>
             <!-- 下面layout不对 -->

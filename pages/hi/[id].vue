@@ -15,7 +15,7 @@ definePageMeta({
     >
       Back
     </NuxtLink>
-    <n-card title="子页">
+    <n-card title="child title">
       {{ name }}!
     </n-card>
 

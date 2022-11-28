@@ -1,80 +1,99 @@
-<p align="center">
-<img src="https://user-images.githubusercontent.com/11247099/140462375-7b7ac4db-35b7-453c-8a05-13d8d20282c4.png" width="600"/>
-</p>
+# naive UI 在nuxt3首次加载 bug
+nuxt3 中使用 `NuxtLayout` 组件时， naive UI 首次加载的时候把主题传递下去，使用 `@nuxtjs/color-mode` 切换主题没问题
 
-<h2 align="center">
-<a href="https://github.com/antfu/vitesse">Vitesse</a> for Nuxt 3
-</h2><br>
+``` json
+// package.json
+{
+  "devDependencies": {
+    "@antfu/eslint-config": "^0.31.0",
+    "@css-render/vue3-ssr": "^0.15.11",
+    "@iconify-json/carbon": "^1.1.11",
+    "@iconify-json/twemoji": "^1.1.7",
+    "@nuxtjs/color-mode": "^3.2.0",
+    "@pinia/nuxt": "^0.4.6",
+    "@unocss/nuxt": "^0.46.5",
+    "@vueuse/nuxt": "^9.6.0",
+    "eslint": "^8.28.0",
+    "naive-ui": "^2.34.2",
+    "nuxt": "^3.0.0",
+    "typescript": "^4.9.3",
+    "unplugin-vue-components": "^0.22.11"
+  }
+}
+```
+---
+``` ts
+// nuxt.config.ts
+import Components from 'unplugin-vue-components/vite'
+import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 
-<pre align="center">
-🧪 Working in Progress
-</pre>
+export default defineNuxtConfig({
+  modules: [
+    ...other,
+    '@nuxtjs/color-mode',
+  ],
+  css: [
+    // '@unocss/reset/tailwind.css',
+  ],
+  build: {
+    transpile:
+      process.env.NODE_ENV === 'production'
+        ? ['naive-ui', 'vueuc', '@css-render/vue3-ssr', '@juggle/resize-observer']
+        : ['@juggle/resize-observer'],
+  },
+  vite: {
+    plugins: [
+      Components({
+        resolvers: [NaiveUiResolver()],
+      }),
+    ],
+    ssr: {
+      noExternal: ['naive-ui'],
+    },
+    optimizeDeps: {
+      include:
+        process.env.NODE_ENV === 'development'
+          ? ['naive-ui', 'vueuc', 'date-fns-tz/esm/formatInTimeZone']
+          : [],
+    },
+  },
+})
+```
+---
+``` ts
+// plugins/naive-ui.ts
+import { setup } from '@css-render/vue3-ssr'
+import type { NuxtSSRContext } from '#app'
+import { defineNuxtPlugin } from '#app'
 
-<p align="center">
-<br>
-<a href="https://vitesse-nuxt3.netlify.app/">🖥 Online Preview</a>
-<br><br>
-<a href="https://stackblitz.com/github/antfu/vitesse-nuxt3"><img src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt=""></a>
-</p>
+export default defineNuxtPlugin((nuxtApp) => {
+  if (process.server) {
+    const { collect } = setup(nuxtApp.vueApp)
+    const originalRenderMeta = nuxtApp.ssrContext?.renderMeta
+    nuxtApp.ssrContext = nuxtApp.ssrContext || {} as NuxtSSRContext
+    nuxtApp.ssrContext.renderMeta = () => {
+      if (!originalRenderMeta) {
+        return {
+          headTags: collect(),
+        }
+      }
+      const originalMeta = originalRenderMeta()
+      if ('then' in originalMeta) {
+        return originalMeta.then((resolvedOriginalMeta) => {
+          return {
+            ...resolvedOriginalMeta,
+            headTags: resolvedOriginalMeta.headTags + collect(),
+          }
+        })
+      }
+      else {
+        return {
+          ...originalMeta,
+          headTags: originalMeta.headTags + collect(),
+        }
+      }
+    }
+  }
+})
 
-## Features
-
-- [💚 Nuxt 3](https://v3.nuxtjs.org) - SSR, ESR, File-based routing, components auto importing, modules, etc.
-
-- ⚡️ Vite - Instant HMR
-
-- 🎨 [UnoCSS](https://github.com/antfu/unocss) - The instant on-demand atomic CSS engine.
-
-- 😃 Use icons from any icon sets in Pure CSS, powered by [UnoCSS](https://github.com/antfu/unocss)
-
-- 🔥 The `<script setup>` syntax
-
-- 🍍 [State Management via Pinia](https://pinia.esm.dev), see [./composables/user.ts](./composables/user.ts)
-
-- 📑 [Layout system](./layouts)
-
-- 📥 APIs auto importing - for Composition API, VueUse and custom composables.
-
-- 🏎 Zero-config cloud functions and deploy
-
-- 🦾 TypeScript, of course
-
-## Plugins
-
-### Nuxt Modules
-
-- [VueUse](https://github.com/vueuse/vueuse) - collection of useful composition APIs.
-- [ColorMode](https://github.com/nuxt-community/color-mode-module) - dark and Light mode with auto detection made easy with Nuxt.
-- [UnoCSS](https://github.com/antfu/unocss) - the instant on-demand atomic CSS engine.
-- [Pinia](https://pinia.esm.dev/) - intuitive, type safe, light and flexible Store for Vue.
-
-## IDE
-
-We recommend using [VS Code](https://code.visualstudio.com/) with [Volar](https://github.com/johnsoncodehk/volar) to get the best experience (You might want to disable Vetur if you have it).
-
-## Variations
-
-- [vitesse](https://github.com/antfu/vitesse) - Opinionated Vite Starter Template
-- [vitesse-lite](https://github.com/antfu/vitesse-lite) - Lightweight version of Vitesse
-- [vitesse-nuxt-bridge](https://github.com/antfu/vitesse-nuxt-bridge) - Vitesse for Nuxt 2 with Bridge
-- [vitesse-webext](https://github.com/antfu/vitesse-webext) - WebExtension Vite starter template
-
-## Try it now!
-
-### Online
-
-<a href="https://stackblitz.com/github/antfu/vitesse-nuxt3"><img src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt=""></a>
-
-### GitHub Template
-
-[Create a repo from this template on GitHub](https://github.com/antfu/vitesse-nuxt3/generate).
-
-### Clone to local
-
-If you prefer to do it manually with the cleaner git history
-
-```bash
-npx degit antfu/vitesse-nuxt3 my-nuxt3-app
-cd my-nuxt3-app
-pnpm i # If you don't have pnpm installed, run: npm install -g pnpm
 ```

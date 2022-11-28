@@ -1,6 +1,6 @@
 <template>
   <main class="text-center">
-    <p>我在layouts/default.vue</p>
+    <p>layouts/default.vue</p>
     <TestButton />
     <slot />
     <DarkToggle m2 />

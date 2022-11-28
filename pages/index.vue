@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      <p>我在page/index.vue</p>
+      <p>page/index.vue</p>
       <TestButton />
     </div>
     <NuxtLink to="/hi/1" decoration-none>
@@ -9,7 +9,7 @@
         GO
       </button>
     </NuxtLink>
-    <n-card title="首页">
+    <n-card title="Home title">
       home
     </n-card>
   </div>
