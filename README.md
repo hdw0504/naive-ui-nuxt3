@@ -1,5 +1,5 @@
 # naive UI 在nuxt3首次加载 bug
-nuxt3 中使用 `NuxtLayout` 组件时， naive UI 首次加载的时候把主题传递下去，使用 `@nuxtjs/color-mode` 切换主题没问题
+nuxt3 中使用 `NuxtLayout` 组件时，首次加载页面主题并未正常传递下去，使用 `@nuxtjs/color-mode` 切换主题后再切回来没问题
 
 ``` json
 // package.json
