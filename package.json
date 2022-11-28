@@ -1,0 +1,37 @@
+{
+  "private": true,
+  "packageManager": "pnpm@7.9.0",
+  "scripts": {
+    "build": "nuxi build",
+    "dev": "nuxi dev",
+    "start": "node .output/server/index.mjs",
+    "lint": "eslint .",
+    "postinstall": "nuxi prepare",
+    "generate": "nuxi generate",
+    "up": "taze major -I"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^0.31.0",
+    "@css-render/vue3-ssr": "^0.15.11",
+    "@iconify-json/carbon": "^1.1.11",
+    "@iconify-json/twemoji": "^1.1.7",
+    "@nuxtjs/color-mode": "^3.2.0",
+    "@pinia/nuxt": "^0.4.6",
+    "@unocss/nuxt": "^0.46.5",
+    "@vueuse/nuxt": "^9.6.0",
+    "eslint": "^8.28.0",
+    "naive-ui": "^2.34.2",
+    "nuxt": "^3.0.0",
+    "typescript": "^4.9.3",
+    "unplugin-vue-components": "^0.22.11"
+  },
+  "pnpm": {
+    "peerDependencyRules": {
+      "ignoreMissing": [
+        "vue",
+        "vite",
+        "webpack"
+      ]
+    }
+  }
+}
